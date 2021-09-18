@@ -1,5 +1,7 @@
 importPackage(Packages.arc.input);
+importPackage(Packages.arc.struct);
 importPackage(Packages.arc.util.pooling);
+importPackage(Packages.mindustry.content);
 global.alerts = {};
 var lastUnlockTable = null;
 var lastUnlockLayout = null;
@@ -13,10 +15,10 @@ function popup(intable){
 		}
 	});
 	table.margin(12);
-	
+
 	table.add(intable).padRight(8);
                 table.pack();
-	
+
 	var container = Core.scene.table();
 	container.top().add(table);
 	container.setTranslation(0, table.getPrefHeight());
@@ -26,7 +28,7 @@ function popup(intable){
 		lastUnlockTable = null;
 		lastUnlockLayout = null;
 	}), Actions.remove())));
-	
+
 	lastUnlockTable = container;
     lastUnlockLayout = intable;
 }
@@ -52,21 +54,21 @@ function getConstructingBlock(tile){
 var eventid = 0;
 
 function eventLogInfo(team,message){
-	queue.add("E-"+eventid+" Team "+chatTeamColor(team)+team.name+"[white] "+message);
+	//queue.add("E-"+eventid+" Team "+chatTeamColor(team)+team.name+"[white] "+message);
 	eventid++;
 }
 function eventLogBlock(team,block,tile){
 	if(!tile){
 		return;
 	}
-	queue.add("E-"+eventid+" Team "+chatTeamColor(team)+team.name+"[white] has placed:"+ block.localizedName+ toBlockEmoji(block)+" at ["+ tile.x+","+tile.y+"]");
+	//queue.add("E-"+eventid+" Team "+chatTeamColor(team)+team.name+"[white] has placed:"+ block.localizedName+ toBlockEmoji(block)+" at ["+ tile.x+","+tile.y+"]");
 	eventid++;
 }
 function eventLog(team,tile){
 	if(!tile){
 		return;
 	}
-	queue.add("E-"+eventid+" Team "+chatTeamColor(team)+team.name+"[white] has placed:"+ getConstructingBlock(tile).localizedName+ " at ["+ tile.x+","+tile.y+"]");
+	//queue.add("E-"+eventid+" Team "+chatTeamColor(team)+team.name+"[white] has placed:"+ getConstructingBlock(tile).localizedName+ " at ["+ tile.x+","+tile.y+"]");
 	eventid++;
 }
 
@@ -134,7 +136,7 @@ const BlockTracker={
 			eventLogInfo(team,this.customText(team,block,tile));
 		}
 	}
-	
+
 }
 
 const BlockTrackHandler={
@@ -184,8 +186,8 @@ const TeamAchievement={
 	units: null,
 	team: null,
 	milestones: null,
-	
-	
+
+
 	new(team){
 		var f = Object.create(TeamAchievement);
 		f.team = team;
@@ -203,17 +205,17 @@ const TeamAchievement={
 	processBuildingEvent(tile){
 	},
 	processUnitCreateEvent(unit){
-		print(unit.name);
+		//print(unit.name);
 		if(!this.units){
 			this.units = Seq.with(unit);
-			eventLogInfo(this.team,"has started making "+unit.localizedName+toBlockEmoji(unit));
+			//eventLogInfo(this.team,"has started making "+unit.localizedName+toBlockEmoji(unit));
 		}
 		if(!this.units.contains(unit)){
 			this.units.add(unit);
-			eventLogInfo(this.team,"has started making "+unit.localizedName+toBlockEmoji(unit));
+			//eventLogInfo(this.team,"has started making "+unit.localizedName+toBlockEmoji(unit));
 		}
 	}
-	
+
 }
 var blocktrackhandle=null;
 var trackers = new Seq();
@@ -289,11 +291,12 @@ var alertPip = {
 		if(!showpips){
 			return;
 		}
-		
+
+
 		this.shake/=1.4;
 		var camera = Core.camera;
-		
-		
+
+
 		let col = Pal.accent;
 		let icon = (this.severity<2?alerticonlow:alerticonhigh);
 		if(this.severity<1){
@@ -303,7 +306,7 @@ var alertPip = {
 		}else{
 			col = (Time.time%60<30 ? Pal.health: Color.white);
 		}
-		
+
 		let camdist = Mathf.dst(this.x, this.y,camera.position.x,camera.position.y);
 		let size = Math.max(0.5,1.0/(1.0+0.002*camdist));
 		this.animate+=(size-this.animate)*0.1;
@@ -317,15 +320,15 @@ var alertPip = {
 				this.px+=(this.x-this.px)*0.2;
 				this.py+=(this.y+8-this.py)*0.2;
 				this.pang+=(270-this.pang)*0.2;
-				
+
 			}
-			
+
 			Draw.color(col);
 			Draw.alpha(0.5);
 			this.points.each(p =>{
 				Lines.line(this.px,this.py-8,p.x,p.y);
 			});
-			
+
 		}else{
 			let dx = this.x - camera.position.x;
 			let dy = this.y - camera.position.y;
@@ -341,17 +344,17 @@ var alertPip = {
 				this.py+=(camera.position.y + dy*20-this.py)*0.3;
 				this.pang+=( Mathf.atan2(dx, dy) * Mathf.radiansToDegrees-this.pang)*0.3;
 			}
-			
+
 		}
 		Draw.color(Pal.darkerGray);
 		Fill.circle(this.px,this.py,(22/4)*this.animate);
-		
+
 		Draw.color(col);
 		Draw.alpha(fade);
-		
+
 		Draw.rect(pipicon,this.px,this.py,12*this.animate,12*this.animate,this.pang);
 		Draw.rect(icon, this.px + Mathf.range(this.shake),this.py+ Mathf.range(this.shake),4*this.animate,4*this.animate);
-			
+
 	},
 	retrigger(x,y,s,max){
 		if(Mathf.dst2(x-this.x,y-this.y)<(100*100)){
@@ -376,7 +379,7 @@ var unitprogressbar = {
 		if(build.currentPlan == -1){
 			return;
 		}
-		
+
 		var prog = 0;
 		if(build instanceof UnitFactory.UnitFactoryBuild){
 			var plan = build.block.plans.get(build.currentPlan);
@@ -387,24 +390,24 @@ var unitprogressbar = {
 		if(prog>0 && viewprogress){
 			var hw = build.block.size*4;
 			var yoffset = hw + 2;
-			
+
 			Draw.z(Layer.darkness+1);
-			
+
 			Draw.color(Pal.darkerGray);
 			Lines.stroke(4);
 			Lines.line(build.x - hw,build.y+yoffset,build.x - hw +hw*2*prog,build.y+yoffset);
 			Draw.color(build.team.color);
 			Lines.stroke(2);
 			Lines.line(build.x - hw,build.y+yoffset,build.x - hw +hw*2*prog,build.y+yoffset);
-			
+
 			var text = Math.floor(prog*100.0)+"%";
-			
+
 			var font = Fonts.outline;
 			var lay = Pools.obtain(GlyphLayout, prov(()=>{return new GlyphLayout()}));
-			
+
 			font.setUseIntegerPositions(false);
 			font.getData().setScale(1.0 / 4.0 / Scl.scl(1.0));
-			
+
 			lay.setText(font, text);
 
 			font.setColor(Color.white);
@@ -413,7 +416,7 @@ var unitprogressbar = {
 			Pools.free(lay);
 			Draw.reset();
 		}
-		
+
 	}
 }
 
@@ -430,9 +433,9 @@ Events.on(EventType.BlockDestroyEvent, cons(e => {
 	var tile = e.tile;
 	if(tile.build instanceof CoreBlock.CoreBuild){
 		if(tile.team()== Vars.player.team()){
-			queue.add("[red]!!Core at ["+tile.x+","+tile.y+"] was lost!!");
+			//queue.add("[red]!!Core at ["+tile.x+","+tile.y+"] was lost!!");
 		}else{
-			eventLogInfo(tile.team(),"has lost a core at ["+tile.x+","+tile.y+"]");
+			//eventLogInfo(tile.team(),"has lost a core at ["+tile.x+","+tile.y+"]");
 		}
 	}
 	if(tile.team()== Vars.player.team()){
@@ -453,7 +456,7 @@ Events.on(EventType.BlockDestroyEvent, cons(e => {
 			max = tile.build.block.size*2;
 			if(tile.build.block instanceof PowerGenerator){
 				severe*=150;
-			}else 
+			}else
 			if(tile.build.block instanceof PowerNode){
 				severe*=3;
 			}else{
@@ -492,55 +495,25 @@ Events.on(EventType.CommandIssueEvent, cons(e => {
 				t.timer=-1;
 			}
 		});
-		
+
 		anticommandspam.add({
 			timer: 0,
 			team: tile.team
 		});
-		
+
 	}
 }));
 
-Events.on(EventType.ClientLoadEvent, 
+Events.on(EventType.ClientLoadEvent,
 cons(e => {
-	alerticonlow = Core.atlas.find("pvpnotifs-alert-0");
-	alerticonhigh = Core.atlas.find("pvpnotifs-alert-1");
-	pipicon = Core.atlas.find("pvpnotifs-pip");
-	addTrackHandler(BlockTrackHandler.new("graphite",BlockBuildTracker, Blocks.graphitePress,false,{
-		"customText": function(team,block,tile){
-			return "has started graphite production "+toBlockEmoji(block)+""+toBlockEmoji(Items.graphite);
-		}
-	} ));
-	addTrackHandler(BlockTrackHandler.new("silicon",BlockBuildTracker, Blocks.siliconSmelter,false,{
-		"customText": function(team,block,tile){
-			return "has started silicon production "+toBlockEmoji(block)+""+toBlockEmoji(Items.silicon);
-		}
-	}));
-	addTrackHandler(BlockTrackHandler.new("plast",BlockBuildTracker, Blocks.plastaniumCompressor,false,{
-		"customText": function(team,block,tile){
-			return "has started plastanium production "+toBlockEmoji(block)+""+toBlockEmoji(Items.plastanium);
-		}
-	}));
-	addTrackHandler(BlockTrackHandler.new("phase",BlockBuildTracker, Blocks.phaseWeaver,false,{
-		"customText": function(team,block,tile){
-			return "has started phase production "+toBlockEmoji(block)+""+toBlockEmoji(Items.phaseFabric);
-		}
-	}));
-	addTrackHandler(BlockTrackHandler.new("surge",BlockBuildTracker, Blocks.surgeSmelter,false,{
-		"customText": function(team,block,tile){
-			return "has started surge production "+toBlockEmoji(block)+""+toBlockEmoji(Items.surgeAlloy);
-		}
-	}));
-	addTrackHandler(BlockTrackHandler.new("foreshadow",BlockBuildTracker, Blocks.foreshadow,false,{}));
-	
-	
-	
-	
-	
+	alerticonlow = Core.atlas.find("falleninterface-alert-0");
+	alerticonhigh = Core.atlas.find("falleninterface-alert-1");
+	pipicon = Core.atlas.find("falleninterface-pip");
+
 	Vars.content.blocks().each((e2)=>{
-		if(e2 instanceof UnitFactory){ 
+		if(e2 instanceof UnitFactory){
 			addTrackHandler(BlockTrackHandler.new(e2.name,BlockBuildTracker, e2,false,{}));
-			e2.buildType = ()=>{  
+			e2.buildType = ()=>{
 				return extend(UnitFactory.UnitFactoryBuild,e2,{
 					drawables:[
 						Object.create(unitprogressbar)
@@ -560,7 +533,7 @@ cons(e => {
 							this.drawables[i].draw(this);
 						}
 					}
-					
+
 				});
 			}
 		}
@@ -570,8 +543,8 @@ cons(e => {
 					return "can now make Tier-"+Math.round((block.size+1)*0.5)+" units" + toBlockEmoji(block);
 				}
 			}));
-			
-			e2.buildType = ()=>{ 
+
+			e2.buildType = ()=>{
 				return extend(Reconstructor.ReconstructorBuild,e2,{
 					drawables:[
 						Object.create(unitprogressbar)
@@ -591,80 +564,40 @@ cons(e => {
 							this.drawables[i].draw(this);
 						}
 					}
-					
+
 				});
 			}
 		}
 	});
-	var titaniumevent = {
-		"customText": function(team,block,tile){
-			return "has started titanium production "+toBlockEmoji(block)+""+toBlockEmoji(Items.titanium);
-		},
-		"buildfilter":function(build){
-			return build.dominantItem == Items.titanium;
-		}
-	};
-	var thoriumevent = {
-		"customText": function(team,block,tile){
-			return "has started thorium production "+toBlockEmoji(block)+""+toBlockEmoji(Items.thorium);
-		},
-		"buildfilter":function(build){
-			return build.dominantItem == Items.thorium;
-		}
-	};
-	addTrackHandler(BlockTrackHandler.new("titanium",BlockBuildTracker, Blocks.pneumaticDrill,false,titaniumevent));
-	addTrackHandler(BlockTrackHandler.new("titanium",BlockBuildTracker, Blocks.laserDrill,false,titaniumevent));
-	addTrackHandler(BlockTrackHandler.new("titanium",BlockBuildTracker, Blocks.blastDrill,false,titaniumevent));
-	addTrackHandler(BlockTrackHandler.new("thorium",BlockBuildTracker, Blocks.laserDrill,false,thoriumevent));
-	addTrackHandler(BlockTrackHandler.new("thorium",BlockBuildTracker, Blocks.blastDrill,false,thoriumevent));
-	
-	/* - unforuntaly doesnt work and makes the messages not appear.(the ui element is still there thoh)
-	Vars.ui.chatfrag = extend(	ChatFragment,{
-		container2:null,
-		addMessage(message,sender){
-			this.super$addMessage(message,sender);
-			onChat(sender,message);
-		},
-		container(){
-			if(!this.container2){
-				let th = this;
-				this.container2 = extend(Fragment,{
-					build(parent){
-						Core.scene.add(th);
-					}
-				});
-			}
-			return this.container2;
-		}
-	});*/
-	
-	
+
+
 	Vars.mods.getScripts().runConsole("this.alert = this.global.alerts.onChat");
 	//onChat("Xelo",msg)
-	var rangeicon = Core.atlas.find("pvpnotifs-rangeair");
-	var rangeicon2 = Core.atlas.find("pvpnotifs-rangeground");
-	var rangeammoicon = Core.atlas.find("pvpnotifs-rangeammo");
-	var progressicon = Core.atlas.find("pvpnotifs-unitprogress");
-	var oreicon = Core.atlas.find("pvpnotifs-orescan");
-	var votekick = Core.atlas.find("pvpnotifs-votekick");
-	var pipbuttonicon = Core.atlas.find("pvpnotifs-pipicon");
-	
+	var rangeicon = Core.atlas.find("falleninterface-rangeair");
+	var rangeicon2 = Core.atlas.find("falleninterface-rangeground");
+	var rangeammoicon = Core.atlas.find("falleninterface-rangeammo");
+	var progressicon = Core.atlas.find("falleninterface-unitprogress");
+	var oreicon = Core.atlas.find("falleninterface-orescan");
+	var votekick = Core.atlas.find("falleninterface-votekick");
+	var pipbuttonicon = Core.atlas.find("falleninterface-pipicon");
+	var oresandic = Core.atlas.find("falleninterface-oresand0");
+	var orecoalic = Core.atlas.find("falleninterface-orecoal0");
+	var orescrapic = Core.atlas.find("falleninterface-orescrap0");
+
 	//Vars.indexer.getAllied(team, BlockFlag.generator).forEach((c)=>{});
-	
+
 	var coreplus = (t)=>{
-		if(!t){
-			return;
-		}
-		t.row();
+		//t.row();
+		//t.getCells().get(0).padBottom(6);
 		//prov(()=>{return "Power:"+Strings.fixed(powerBalance()*60.0,1)})
 		//prov(()=>{return Pal.health.cpy().lerp(Color.lime, Math.clamp(powerBalance()*0.25+0.5,0,1))})
-		var powbar= new Bar("Power",Pal.accent, floatp(()=>{return getBatLevel();}));
-		powbar.set(prov(()=>{return "Power: "+(powerBalance() >= 0 ? "+" : "") + Strings.fixed(powerBalance()*60.0,1)}),floatp(()=>{return getBatLevel();}),Pal.accent);
-		t.add(powbar).width(200).height(25).pad(4);
+		//var powbar= new Bar("Power",Pal.accent, floatp(()=>{return getBatLevel();}));
+		//powbar.set(prov(()=>{return "Power: "+(powerBalance() >= 0 ? "+" : "") + Strings.fixed(powerBalance()*60.0,1)}),floatp(()=>{return getBatLevel();}),Pal.accent);
+		//t.add(powbar).width(200).height(25).pad(4);
 	}
-	coreplus(Vars.ui.hudGroup.find(boolf(e=>{return e instanceof CoreItemsDisplay})));
-	
-	
+	coreplus(Vars.ui.hudGroup.find("coreitems"));
+
+
 	var custominfo = extend(BaseDialog,"",{
         showSchem(schem){
 			this.setFillParent(true);
@@ -716,7 +649,7 @@ cons(e => {
                     }
                 }));
             }
-				
+
 			this.cont.row();
 			this.cont.table(
 				cons((tbl)=>{
@@ -728,74 +661,104 @@ cons(e => {
 						})).update(b => b.setChecked(Core.settings.getString(g+"-schem")==schem.name())).width(46).height(46).name("test"+1).tooltip("set to slot "+g);
 					}
 				})
-			);	
+			);
             this.show();
         }
     });
-	
-	
+
+
 	Vars.ui.schematics = extend(SchematicsDialog,{
 		showInfo(schem){
 			custominfo.showSchem(schem);
 		}
 	});
-	
+
 	Vars.ui.hudGroup.fill(cons(t => {
 		let togglestyle = Styles.clearToggleTransi;
 		let style = Styles.clearTransi;
+
+		t.button(new TextureRegionDrawable(oresandic), togglestyle, run(()=>{
+			oresand=!oresand;
+		})).update(b => b.setChecked(oresand)).width(46).height(46).name("oresand").tooltip("Копать песок");
+
+		t.button(new TextureRegionDrawable(orecoalic), togglestyle, run(()=>{
+			orecoal=!orecoal;
+		})).update(b => b.setChecked(orecoal)).width(46).height(46).name("orecoal").tooltip("Копать уголь");
+
+		t.button(new TextureRegionDrawable(orescrapic), togglestyle, run(()=>{
+			orescrap=!orescrap;
+		})).update(b => b.setChecked(orescrap)).width(46).height(46).name("orescrap").tooltip("Копать скрап");
+
+		t.row();
 		t.button(new TextureRegionDrawable(rangeicon), togglestyle, run(()=>{
 			viewAirRange=!viewAirRange;
-		})).update(b => b.setChecked(viewAirRange)).width(46).height(46).name("airrange").tooltip("view air turret range");
-		
+		})).update(b => b.setChecked(viewAirRange)).width(46).height(46).name("airrange").tooltip("Показать радиус ПВО турелей");
+
 		t.button(new TextureRegionDrawable(rangeicon2), togglestyle, run(()=>{
 			viewGroundRange=!viewGroundRange;
-		})).update(b => b.setChecked(viewGroundRange)).width(46).height(46).name("groundrange").tooltip("view ground turret range");
-		
+		})).update(b => b.setChecked(viewGroundRange)).width(46).height(46).name("groundrange").tooltip("Показать радиус наземных турелей");
+
 		t.button(new TextureRegionDrawable(rangeammoicon), togglestyle, run(()=>{
 			ignoreNoAmmo=!ignoreNoAmmo;
-		})).update(b => b.setChecked(ignoreNoAmmo)).width(46).height(46).name("ammorange").tooltip("ignore turrets without ammo");
-		
+		})).update(b => b.setChecked(ignoreNoAmmo)).width(46).height(46).name("ammorange").tooltip("Игнорировать пушки без патронов");
 		t.row();
+
 		t.button(Icon.units, style, run(()=>{
 			onChat("Xelo","units")
-		})).width(46).height(46).name("units").tooltip("count enemy units");
-		
+		})).width(46).height(46).name("units").tooltip("Око Саурона");
+
 		t.button(new TextureRegionDrawable(progressicon), togglestyle, run(()=>{
 			viewprogress=!viewprogress;
-		})).update(b => b.setChecked(viewprogress)).width(46).height(46).name("progress").tooltip("show progress bar on unit factories");
-		
-		t.button(Icon.units, togglestyle, run(()=>{
-			stealUnit=!stealUnit;
-		})).update(b => b.setChecked(stealUnit)).width(46).height(46).name("stealunit").tooltip("control nearby unit as soon as it exits factory");
-		
+		})).update(b => b.setChecked(viewprogress)).width(46).height(46).name("progress").tooltip("Готовность заводов юнитов");
+
+		t.button(Icon.itchio, togglestyle, run(()=>{
+			Call.sendChatMessage("/rtv");
+		})).update(b => b.setChecked(stealUnit)).width(46).height(46).name("stealunit").tooltip("/rtv");
+
 		t.row();
 		t.button(new TextureRegionDrawable(oreicon), togglestyle, run(()=>{
-			orescan=!orescan;
-		})).update(b => b.setChecked(orescan)).width(46).height(46).name("ores").tooltip("show covered ores");
+			if(playerAIOnMa){
+				playerAIOnMa = null;
+			}else{
+				//playerAI = new BuilderAI();
+				playerAIOnMa = new BuilderAI();
+				playerAIOnMa.unit(Vars.player.unit());
+			}
+		})).update(b => b.setChecked(!!playerAIOnMa)).width(46).height(46).name("ores").tooltip("Вечная моно...");
 		t.button(Icon.eyeSmall, togglestyle, run(()=>{
 			Vars.enableLight=!Vars.enableLight;
-		})).update(b => b.setChecked(orescan)).width(46).height(46).name("light").tooltip("toggle lighting");
+		})).update(b => b.setChecked(orescan)).width(46).height(46).name("light").tooltip("Да будет свет!");
 		t.button(new TextureRegionDrawable(pipbuttonicon), togglestyle, run(()=>{
 			showpips=!showpips;
-		})).update(b => b.setChecked(showpips)).width(46).height(46).name("light").tooltip("show pips");
+		})).update(b => b.setChecked(showpips)).width(46).height(46).name("light").tooltip("Показать предупреждения");
 		t.row();
 		t.button(Icon.refresh, style, run(()=>{
 			Call.sendChatMessage("/sync");
-		})).width(46).height(46).name("ores").tooltip("sync");
+		})).width(46).height(46).name("ores").tooltip("/sync");
 		t.button(new TextureRegionDrawable(votekick), style, run(()=>{
 			Call.sendChatMessage("/vote y");
-		})).width(46).height(46).name("ores").tooltip("vote y");
-		
-		t.button(Icon.terminal, togglestyle, run(()=>{
-			if(playerAI){
-				playerAI = null;
-			}else{
-				playerAI = new BuilderAI();
-				playerAI.unit(Vars.player.unit());
-			}
-		})).update(b => b.setChecked(!!playerAI)).width(46).height(46).name("ores").tooltip("become gamma Ai");
-		
-		t.top().right().marginTop(180);
+		})).width(46).height(46).name("ores").tooltip("/vote y");
+
+		t.button(new TextureRegionDrawable(Icon.terminal), style, run(()=>{
+			Call.sendChatMessage("/rtv wave");
+		})).width(46).height(46).name("ores").tooltip("/rtv wave");
+
+
+		// t.button(new TextureRegionDrawable(Icon.terminal), togglestyle, run(()=>{
+			// hpheal=!hpheal;
+		// })).update(b => b.setChecked(!!hpheal)).width(46).height(46).name("immortal").tooltip("IMMORTAL");
+
+		// t.button(new TextureRegionDrawable(Icon.terminal), togglestyle, run(()=>{
+			// if(PDA){
+				// PDA = null;
+			// }else{
+				// PDA = new FlyingAI();
+				// PDA.unit(Vars.player.unit());
+			// }
+		// })).update(b => b.setChecked(!!PDA)).width(46).height(46).name("ores").tooltip("playerDefAI");
+
+		//t.top().right().marginTop(180);
+		t.top().left().marginTop(220);
 		//Icon.units
 	}));
 	Vars.ui.hudGroup.fill(cons(t => {
@@ -812,20 +775,21 @@ cons(e => {
 			imgbutton.getImage().setScaling(Scaling.stretch);
 			imgbutton.getImage().setSize(width*0.8,width*0.8);
 			imgbutton.resizeImage(width*0.8);
-			
+
 		}
-		t.top().right().marginTop(364);
+		//t.top().right().marginTop(364);
+		t.top().left().marginTop(450);
 	}));
-	
+
 }));
 
 function useSchematic(name){
 	if(!name){return;}
-	print("searching for schem:"+name);
+	//print("searching for schem:"+name);
 	var found = null;
 	Vars.schematics.all().each((s)=>{
 		if(s.name()==name){
-			print("found schem");
+			//print("found schem");
 			found = s;
 		}
 	});
@@ -834,7 +798,19 @@ function useSchematic(name){
 	}
 }
 
+var playerStupidAI= extend(AIController,{
+unitS(u){
+	if(this.unit == u) return;
+	this.unit = u;
+	this.init();
+},
+
+});
+
+
+
 var playerMiningAI= extend(AIController,{
+
 	mining:true,
 	targetItem:null,
 	ore:null,
@@ -844,8 +820,11 @@ var playerMiningAI= extend(AIController,{
         this.init();
 	},
 	updateMovement(){
+		var MyItemsInFkngCore = new Seq();
 		let unit = this.unit;
-		
+		MyItemsInFkngCore = unit.team.data().mineItems;
+
+
         var core = unit.closestCore(); //core is a Building
 
         if(!(unit.canMine()) || core == null) return;
@@ -855,9 +834,18 @@ var playerMiningAI= extend(AIController,{
         }
 
         if(this.mining){
-            if(this.timer.get(1, 240) || this.targetItem == null){
-                this.targetItem = unit.team.data().mineItems.min(boolf(i => Vars.indexer.hasOre(i) && unit.canMine(i)),floatf(i => core.items.get(i)));
-            }
+            if(this.timer.get(1, 500) || this.targetItem == null){
+				if(oresand) {if(!MyItemsInFkngCore.contains(Items.sand))  MyItemsInFkngCore.add(Items.sand);} else MyItemsInFkngCore.remove(Items.sand);
+				if(orecoal) {if(!MyItemsInFkngCore.contains(Items.coal))  MyItemsInFkngCore.add(Items.coal);} else MyItemsInFkngCore.remove(Items.coal);
+				if(orescrap) {if(!MyItemsInFkngCore.contains(Items.scrap))  MyItemsInFkngCore.add(Items.scrap);} else MyItemsInFkngCore.remove(Items.scrap);
+
+				this.targetItem = MyItemsInFkngCore.min(boolf(i => Vars.indexer.hasOre(i) && unit.canMine(i)),floatf(i => core.items.get(i)));
+				//queue.add("[#ff]"+this.targetItem);
+				//queue.add("[#ff]"+this.targetItem);
+				//queue.add("[#ff]Cooper: "+MyItemsInFkngCore.indexOf(Items.copper));
+				//queue.add("[#ff]Lead: "+MyItemsInFkngCore.indexOf(Items.lead));
+
+			}
 
             //core full of the target item, do nothing
             if(this.targetItem != null && core.acceptStack(this.targetItem, 1, unit) == 0){
@@ -888,29 +876,32 @@ var playerMiningAI= extend(AIController,{
             }
         }else{
             unit.mineTile = null;
-
-            if(unit.stack.amount == 0){
+			//unit.clearItem();
+            if(this.timer.get(1, 240) || unit.stack.amount == 0){
                 this.mining = true;
                 this.return;
             }
 
-            if(unit.within(core, unit.type.range)){
+            if(unit.within(core, unit.type.range/2)){
                 if(core.acceptStack(unit.stack.item, unit.stack.amount, unit) > 0){
-					Call.transferInventory(Vars.player,core);
-                    //Call.transferItemTo(unit, unit.stack.item, unit.stack.amount, unit.x, unit.y, core);
+					if(this.timer.get(1, 10)) {Call.transferInventory(Vars.player,core);}
                 }
 
-                //unit.clearItem();
                 this.mining = true;
             }
 
+			//else {unit.clearItem();}
+
             this.circle(core, unit.type.range / 1.8);
+
+
         }
     }
 });
 
-
 var playerAI = null;
+var playerAIOnMa = null;
+var PDA = null;
 
 var powerbal=0;
 var stored=0;
@@ -925,9 +916,13 @@ function getBatLevel(){
 var viewAirRange=false;
 var viewGroundRange=false;
 var ignoreNoAmmo=false;
-var viewprogress= true;
+var viewprogress= false;
 var orescan= false;
-var showpips = true;
+var showpips = false;
+var hpheal = false;
+var oresand = false;
+var orecoal = false;
+var orescrap = false;
 
 
 function eachIndexed(team,flag,cons){
@@ -937,7 +932,7 @@ function eachIndexed(team,flag,cons){
 	}
 }
 function hasAmmo(build){
-	
+
 	if(build.block instanceof PowerTurret || build.block instanceof PointDefenseTurret || build.block instanceof TractorBeamTurret){
 		return build.power.status>0;
 	}
@@ -953,7 +948,7 @@ Events.run(Trigger.draw, () => {
 	var avgy = Math.floor(camera.position.y / Vars.tilesize);
 	var rangex = Math.floor(camera.width / Vars.tilesize / 2) + 3;
 	var rangey = Math.floor(camera.height / Vars.tilesize / 2) + 3;
-	
+
 	if(viewAirRange||viewGroundRange){
 		Draw.draw(Layer.darkness+0.01, run(()=>{
 			var expandr = 2;
@@ -961,7 +956,7 @@ Events.run(Trigger.draw, () => {
 			var miny = Math.max(avgy - rangey - expandr, 0);
 			var maxx = Math.min(Vars.world.width() - 1, avgx + rangex + expandr);
 			var maxy = Math.min(Vars.world.height() - 1, avgy + rangey + expandr);
-			
+
 			Draw.color(0,0,0,0.3);
 			Fill.rect(camera.position.x,camera.position.y,camera.width,camera.height);
 			allTeams.each((team)=>{
@@ -982,7 +977,7 @@ Events.run(Trigger.draw, () => {
 						Draw.color(tile.team().color,0.3);
 						Lines.circle(tb.x, tb.y, tb.block.range);
 					}
-					
+
 				}));
 			});
 		}));
@@ -993,7 +988,7 @@ Events.run(Trigger.draw, () => {
 			var miny = Math.max(avgy - rangey - 1, 0);
 			var maxx = Math.min(Vars.world.width() - 1, avgx + rangex + 1);
 			var maxy = Math.min(Vars.world.height() - 1, avgy + rangey + 1);
-			
+
 			for(var x = minx; x <= maxx; x++){
 				for(var y = miny; y <= maxy; y++){
 					var tile = Vars.world.rawTile(x,y);
@@ -1026,67 +1021,75 @@ function iterateOver(iterator,func){
 var glitch = false;
 var delayglitch=0;
 Events.run(Trigger.update, () => {
-	
+
+		if(hpheal){if(Vars.player.unit().maxHealth > 30) {
+			if(Vars.player.unit().health <= 10000) {
+				if(Vars.player.timer.get(1, 100)) { Call.sendChatMessage("/health");}
+		}}}
 	pips.filter((t)=>{
 		return t.life<t.maxlife;
 	});
-	
+
 	anticommandspam.filter((t)=>{
 		return t.timer>=0;
 	});
 	anticommandspam.each(t =>{
 		t.timer+=Time.delta;
 		if(t.timer>600){
-			eventLogInfo(t.team,"has issued command to attack.");
+			//eventLogInfo(t.team,"has issued command to attack.");
 			t.timer=-1;
 		}
 	});
-	if(playerAI && Vars.player.unit() && Vars.player.unit().type){
+
+	/////////////////////////////////////////////////////////////////////////
+	if(playerAIOnMa && Vars.player.unit() && Vars.player.unit().type){
 		let base = Math.min(Vars.player.team().items().get(Items.copper),Vars.player.team().items().get(Items.lead));
-		if((base<1000 && playerAI instanceof BuilderAI)||  Vars.player.unit().type.buildSpeed<=0){
-			playerAI = playerMiningAI;
-		}else if(base>=1000 && playerAI == playerMiningAI){
-			playerAI = new BuilderAI();
+		if((base<3000000 && playerAIOnMa instanceof BuilderAI)||  Vars.player.unit().type.buildSpeed<=0){
+			playerAIOnMa = playerMiningAI;
 		}
-		if(playerAI==playerMiningAI){
-			playerAI.unitS(Vars.player.unit());
+		else if(base>=3000000 && playerAIOnMa == playerMiningAI){
+			//playerAIOnMa = null;
+			playerAIOnMa = new BuilderAI();
+		}
+		if(playerAIOnMa==playerMiningAI){
+			playerAIOnMa.unitS(Vars.player.unit());
 		}else{
-			playerAI.unit(Vars.player.unit());
+			playerAIOnMa.unit(Vars.player.unit());
 		}
-		playerAI.updateUnit();
+		playerAIOnMa.updateUnit();
 	}
-	
+	/////////////////////////////////////////////////////////////////////////
+
+	/////////////////////////////////////////////////////////////////////////FlyingAI
+	if(PDA && Vars.player.unit() && Vars.player.unit().type){
+		let base = Math.min(Vars.player.team().items().get(Items.copper),Vars.player.team().items().get(Items.lead));
+		if((base<3000000 && PDA instanceof FlyingAI)||  Vars.player.unit().type.buildSpeed<=0){
+			PDA = playerStupidAI;
+		}
+		else if(base>=3000000 && PDA == playerStupidAI){
+			PDA = new FlyingAI();
+		}
+		if(PDA==playerStupidAI){
+			PDA.unitS(Vars.player.unit());
+		}else{
+			PDA.unit(Vars.player.unit());
+		}
+		PDA.updateUnit();
+	}
+	/////////////////////////////////////////////////////////////////////////
+
 	if(wasCleared){
 		var be = enabled;
 		enabled = false;
 		update();
 		while(!queue.isEmpty()){
-			Vars.ui.chatfrag.addMessage(queue.pop(),"[red]PvP-Alerts");
+			Vars.ui.chatfrag.addMessage(queue.pop(),"[#FF]FD");
 		}
 		enabled = be;
 		wasCleared = false;
 	}
-	for(var i=0;i<scanningUnits.size;i++){
-		if(scanningUnits.get(i).x!=0){
-			var unit = scanningUnits.get(i);
-			if(Vars.player.unit() && stealUnit && !lookingForUnit){
-				print("attmpting steal");
-				var dist = Mathf.dst(Vars.player.unit().x,Vars.player.unit().y,unit.x,unit.y);
-				if(dist<100){
-					queue.add("[green]Attempting to grab a "+unit.type.localizedName+"...")
-					lookingForUnit=unit.type;
-				}else{
-					print(unit+" spawned too far ("+(dist/8)+" blocks away)");
-					print(Vars.player.unit().x+","+Vars.player.unit().y+"|"+unit.x+","+unit.y);
-				}
-			}
-			scanningUnits.remove(i);
-		}
-	}
-	
-	
-	
-	
+
+
 	if(lookingForUnit){
 		Groups.unit.each(cons((e)=>{
 			if(e.isAI() && e.team == Vars.player.team() && !e.dead && e.type==lookingForUnit){
@@ -1098,22 +1101,18 @@ Events.run(Trigger.update, () => {
 	}
 	if(glitch){
 		let mv = Vars.control.input.movement;
-		/*
-		
 		if(mv.len()>0.1 && delayglitch>20){
 			Vars.netClient.setPosition(Vars.player.unit().x+mv.x*10,Vars.player.unit().y+mv.y*10);
 			delayglitch=0;
-		}*/
-		Vars.player.unit().vel.x=mv.x*10;
-		Vars.player.unit().vel.y=mv.y*10;
+		}
 	}
 	delayglitch++;
-	
-	
+
+
 	update();
-	
+
 	var gridSeq = new Seq();
-	
+
 	battery=0.01;
 	stored=0;
 	powerbal=0;
@@ -1150,20 +1149,20 @@ function update(){
 				prevsent=0;
 			}
 		}else{
-			Vars.ui.chatfrag.addMessage(queue.pop(),"[red]PvP-Alerts");
+			Vars.ui.chatfrag.addMessage(queue.pop(),"[#ff]FD");
 		}
-		
-	}	
+
+	}
 	prevsent +=Time.delta;
-	
+
 	trackers.each((t)=>{
 		t.updateTrack();
 	})
 	trackers.filter((t)=>{
 		return !t.done;
 	});
-	
-	
+
+
 }
 var wasCleared =false;
 var allTeams = new Seq();
@@ -1178,7 +1177,7 @@ function clear(){
 		teams.clear();
 	}
 	log("debug","cleared all.");
-	
+
 	Vars.world.tiles.each((x,y)=>{
 		var tile = Vars.world.tile(x,y);
 		if(tile.team()!==Team.derelict){
@@ -1193,7 +1192,7 @@ function clear(){
 		}
 	});
 	wasCleared = true;
-	
+
 }
 
 Events.on(EventType.BlockBuildBeginEvent, e => {
@@ -1216,15 +1215,12 @@ var stealUnit=false;
 var scanningUnits=new Seq();
 var lookingForUnit=null;
 Events.on(EventType.UnitCreateEvent, e => {
-	print(e.unit.type);
+	//print(e.unit.type);
 	var team = e.unit.team;
 	if(team!=Vars.player.team()){
 		getTeamAch(team).processUnitCreateEvent(e.unit.type);
 	}
 	scanningUnits.add(e.unit);
-	
-	
-	//
 });
 
 
@@ -1232,6 +1228,7 @@ Events.on(EventType.UnitCreateEvent, e => {
 const onChat = function(sender,message) {
 	if(sender&&sender.includes("Xelo")&&message){
 		var all = message.split(" ");
+
 		var cmd = all[0];
 		switch(cmd){
 			case "help":
@@ -1243,18 +1240,18 @@ const onChat = function(sender,message) {
 			break;
 			case "disable":
 				enabled = false;
-				print("[red]Disabled PvP-alerts"); 
+				print("[red]Disabled PvP-alerts");
 			break;
 			case "prefix":
 				prefix = all[1];
-				print("[cyan]Changed prefix to:[white]"+prefix); 
+				print("[cyan]Changed prefix to:[white]"+prefix);
 			break;
 			case "wipe":
 				clear();
 			break;
 			case "items":
 				if(teams){
-					
+
 					teams.each((k,v)=>{
 						var f = "";
 						k.items().each((item,amount)=>{
@@ -1274,13 +1271,13 @@ const onChat = function(sender,message) {
 			break;
 			case "units":
 				if(teams){
-					
+
 					allTeams.each((team,achieve)=>{
 						var units = null;
 						team.data().units.each((unit)=>{
-							if(!unit.type.isCounted){
-								return;
-							}
+							// if(!unit.type.isCounted){
+								// return;
+							// }
 							if(!units){
 								units= ObjectMap.of(unit.type,{count:0});
 							}
@@ -1309,7 +1306,3 @@ const onChat = function(sender,message) {
 };
 
 global.alerts.onChat = function(msg){onChat("Xelo",msg);};
-
-
-
-

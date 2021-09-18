@@ -1,9 +1,9 @@
 {
-	"name": "pvpnotifs",
-	"displayName": "PvP notifs",
-	"author":"Xelo",
-	"description": "Alerts you to enemy tech progression and unit production",
-	"version": "0.1",
+	"name": "falleninterface",
+	"displayName": "Panel",
+	"author":"FallenDragon",
+	"description": "thx Xelo for original mod",
+	"version": "0.5",
 	"minGameVersion": 117,
 	"hidden": true
 }
