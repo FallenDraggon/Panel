@@ -586,18 +586,6 @@ cons(e => {
 
 	//Vars.indexer.getAllied(team, BlockFlag.generator).forEach((c)=>{});
 
-	var coreplus = (t)=>{
-		//t.row();
-		//t.getCells().get(0).padBottom(6);
-		//prov(()=>{return "Power:"+Strings.fixed(powerBalance()*60.0,1)})
-		//prov(()=>{return Pal.health.cpy().lerp(Color.lime, Math.clamp(powerBalance()*0.25+0.5,0,1))})
-		//var powbar= new Bar("Power",Pal.accent, floatp(()=>{return getBatLevel();}));
-		//powbar.set(prov(()=>{return "Power: "+(powerBalance() >= 0 ? "+" : "") + Strings.fixed(powerBalance()*60.0,1)}),floatp(()=>{return getBatLevel();}),Pal.accent);
-		//t.add(powbar).width(200).height(25).pad(4);
-	}
-	coreplus(Vars.ui.hudGroup.find("coreitems"));
-
-
 	var custominfo = extend(BaseDialog,"",{
         showSchem(schem){
 			this.setFillParent(true);
@@ -743,19 +731,9 @@ cons(e => {
 			Call.sendChatMessage("/rtv wave");
 		})).width(46).height(46).name("ores").tooltip("/rtv wave");
 
-
 		// t.button(new TextureRegionDrawable(Icon.terminal), togglestyle, run(()=>{
 			// hpheal=!hpheal;
 		// })).update(b => b.setChecked(!!hpheal)).width(46).height(46).name("immortal").tooltip("IMMORTAL");
-
-		// t.button(new TextureRegionDrawable(Icon.terminal), togglestyle, run(()=>{
-			// if(PDA){
-				// PDA = null;
-			// }else{
-				// PDA = new FlyingAI();
-				// PDA.unit(Vars.player.unit());
-			// }
-		// })).update(b => b.setChecked(!!PDA)).width(46).height(46).name("ores").tooltip("playerDefAI");
 
 		//t.top().right().marginTop(180);
 		t.top().left().marginTop(220);
@@ -901,7 +879,7 @@ var playerMiningAI= extend(AIController,{
 
 var playerAI = null;
 var playerAIOnMa = null;
-var PDA = null;
+
 
 var powerbal=0;
 var stored=0;
@@ -1057,24 +1035,6 @@ Events.run(Trigger.update, () => {
 			playerAIOnMa.unit(Vars.player.unit());
 		}
 		playerAIOnMa.updateUnit();
-	}
-	/////////////////////////////////////////////////////////////////////////
-
-	/////////////////////////////////////////////////////////////////////////FlyingAI
-	if(PDA && Vars.player.unit() && Vars.player.unit().type){
-		let base = Math.min(Vars.player.team().items().get(Items.copper),Vars.player.team().items().get(Items.lead));
-		if((base<3000000 && PDA instanceof FlyingAI)||  Vars.player.unit().type.buildSpeed<=0){
-			PDA = playerStupidAI;
-		}
-		else if(base>=3000000 && PDA == playerStupidAI){
-			PDA = new FlyingAI();
-		}
-		if(PDA==playerStupidAI){
-			PDA.unitS(Vars.player.unit());
-		}else{
-			PDA.unit(Vars.player.unit());
-		}
-		PDA.updateUnit();
 	}
 	/////////////////////////////////////////////////////////////////////////
 
